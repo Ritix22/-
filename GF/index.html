@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Valentine Swimmer Game</title>
+
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(#eef9ff, #cceeff);
+    overflow: hidden;
+  }
+
+  #container {
+    background: white;
+    padding: 25px 35px 35px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.15);
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 5px;
+  }
+
+  #beat {
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+
+  #timer {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  #pool {
+    position: relative;
+    width: 700px;
+    height: 240px;
+    margin: 20px auto;
+    background: linear-gradient(#6dd5fa, #2980b9);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .ripple {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 50%;
+    animation: ripple 4s infinite;
+  }
+
+  .r1 { left: 150px; top: 60px; }
+  .r2 { left: 350px; top: 100px; animation-delay: 1.5s; }
+  .r3 { left: 520px; top: 50px; animation-delay: 3s; }
+
+  @keyframes ripple {
+    from { transform: scale(.3); opacity:.7; }
+    to { transform: scale(1.4); opacity:0; }
+  }
+
+  #swimmer {
+    position: absolute;
+    left: 10px;
+    top: 90px;
+    font-size: 52px;
+    animation: swim .8s infinite alternate;
+  }
+
+  @keyframes swim {
+    from { transform: translateY(-5px); }
+    to { transform: translateY(5px); }
+  }
+
+  .buttons {
+    position: relative;
+    height: 60px;
+  }
+
+  button {
+    padding: 10px 28px;
+    font-size: 18px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,.2);
+  }
+
+  #yesBtn {
+    background: #ff6fa5;
+    color: white;
+  }
+
+  #noBtn {
+    background: #ccc;
+    position: absolute;
+  }
+
+  #message {
+    font-size: 26px;
+    margin-top: 12px;
+    height: 32px;
+  }
+
+  .heart {
+    position: fixed;
+    bottom: -20px;
+    pointer-events: none;
+    animation: floatUp 4s linear forwards;
+  }
+
+  @keyframes floatUp {
+    from { transform: translateY(0); opacity:1; }
+    to { transform: translateY(-100vh); opacity:0; }
+  }
+</style>
+</head>
+
+<body>
+
+<audio autoplay loop>
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_1c7f0cfa35.mp3">
+</audio>
+
+<div id="container">
+
+<h1>Will you be my girlfriend? (p.s. Swimming is definitely a hobby)</h1>
+
+<div id="beat">Time to beat: 30.03 seconds</div>
+<div id="timer">Time: 0.00</div>
+
+<div id="pool">
+  <div class="ripple r1"></div>
+  <div class="ripple r2"></div>
+  <div class="ripple r3"></div>
+
+  <div id="swimmer">🏊‍♀️</div>
+</div>
+
+<div class="buttons">
+  <button id="yesBtn">Yes</button>
+  <button id="noBtn">No</button>
+</div>
+
+<div id="message"></div>
+
+</div>
+
+<script>
+const swimmer = document.getElementById("swimmer");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const timerDisplay = document.getElementById("timer");
+const message = document.getElementById("message");
+
+let position = 10;
+let started = false;
+let finished = false;
+let startTime;
+let timerInterval;
+
+const finishLine = 620;
+const timeToBeat = 30.03;
+
+// Click YES to swim
+yesBtn.addEventListener("click", () => {
+  if (finished) return;
+
+  if (!started) {
+    started = true;
+    startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 30);
+  }
+
+  position += 15; // distance per click
+  swimmer.style.left = position + "px";
+
+  if (position >= finishLine) finish();
+});
+
+// Stopwatch
+function updateTimer() {
+  const elapsed = (Date.now() - startTime) / 1000;
+  timerDisplay.textContent = "Time: " + elapsed.toFixed(2);
+}
+
+function finish() {
+  finished = true;
+  clearInterval(timerInterval);
+
+  const finalTime = (Date.now() - startTime) / 1000;
+
+  if (finalTime <= timeToBeat) {
+    message.textContent = "Yay ❤️";
+  } else {
+    message.textContent = "Still Yay ❤️";
+  }
+
+  setInterval(createHeart, 150);
+}
+
+// No button dodges
+noBtn.addEventListener("mouseenter", () => {
+  noBtn.style.left = Math.random() * 500 + "px";
+  noBtn.style.top = Math.random() * 40 + "px";
+});
+
+// Hearts after finish
+function createHeart() {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.textContent = "❤️";
+  heart.style.left = Math.random() * window.innerWidth + "px";
+  heart.style.fontSize = 20 + Math.random() * 35 + "px";
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 4000);
+}
+</script>
+
+</body>
+</html>
